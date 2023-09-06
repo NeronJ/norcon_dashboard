@@ -1,97 +1,106 @@
 import streamlit as st
 import pandas as pd
 import pydeck as pdk
+import numpy as np
+import random
+import matplotlib.pyplot as plt
 import plotly.express as px
+import plotly.graph_objects as go
+from plotly.tools import make_subplots
 
-# Set the title of the app
-st.title('World Population')
+st.set_page_config(layout="wide")
 
-# Display the introduction text
-st.write('The world population is the total number of humans currently living, and was estimated to have reached 7.9 billion people as of March 2020. It took over 200,000 years of human history for the world\'s population to reach 1 billion, and only 200 years more to reach 7 billion.')
+# Logo
+col1, col2 = st.columns([8, 1])
+col2.image('https://images.squarespace-cdn.com/content/v1/5dd3cc5b7fd99372fbb04561/11220443-3caa-4681-9e3c-b518097ea2d0/Official+logo_fullname_fullcolour_for+dark+bg+-+no+outline%40FFNPT.png?format=100w',use_column_width='auto', width=200,)
 
-# Create dummy data for the trend graph
-trend_data = pd.DataFrame({
-    'year': [1950, 1960, 1970, 1980, 1990, 2000, 2010],
-    'population': [2.5, 3.0, 3.7, 4.4, 5.3, 6.1, 6.9]
-})
+#####
 
-# Create a visual delimiter
-st.markdown('---')
+# Open the Excel file for reading
+df = pd.read_excel('test_data.xlsx', sheet_name="project")
 
-# Display explanatory text for the trend graph
-st.write('The graph below shows the increase of global population over time. The x-axis represents the year and the y-axis represents the world population in billions.')
 
-# Create a slider to change the population for the initial year
-initial_population = st.slider('Initial Population (1950)', min_value=1.0, max_value=5.0, value=2.5)
+st.title("Show case dashboard for the FFNPT KPIs")
 
-# Update the trend data with the selected initial population
-trend_data.loc[0, 'population'] = initial_population
+######### INTRO SECTION ###########
 
-# Create the trend graph
-st.line_chart(trend_data)
+intro_col_1, intro_col_2, dummy, intro_col_3 = st.columns([2,1,.3,2])
+with intro_col_1:
+    st.markdown(" The FFNPT has already gained support from the World Health Organization, the European Parliament, and many other groups and individuals. Cities and subnational governments have also endorsed the treaty, as well as civil society organizations that have formed a global network. The text encourages readers to take action by endorsing the FFNPT themselves and calling on their own governments to support it. \n This page depicts the level of endorsement over time for four specific KPIs")
+    
+with intro_col_2:
+    column = st.multiselect('Select one or several KPIs', df.columns.drop(['status', 'year']), default=['nation_endorse'])
+    
+with intro_col_3:
+    st.markdown("Some other stuff... Some other stuff... Some other stuff... Some other stuff... Some other stuff... Some other stuff...  Some other stuff... Some other stuff... Some other stuff... Some other stuff... Some other stuff... Some other stuff... Some other stuff... Some other stuff...")
+    
 
-# Create dummy data for the map
-map_data = pd.DataFrame({
-    'lat': [51.5074, 40.7128],
-    'lon': [-0.1278, -74.0060],
-    'population': [8.9, 8.4]
-})
 
-# Define a function to calculate the fill color based on the population
-def calculate_fill_color(population):
-    if population < 5:
-        return [255, 99, 71] # Red
-    elif population < 10:
-        return [255, 165, 0] # Orange
-    else:
-        return [50, 205, 50] # Green
+######### DISPLAY SECTION ###########
 
-# Add a fill_color column to the map data
-map_data['fill_color'] = map_data['population'].apply(calculate_fill_color)
+disp_col_1, dummy, disp_col_2 = st.columns([3,.3,3])
 
-# Create a visual delimiter
-st.markdown('---')
+with disp_col_1:
+    fig = px.line(df, x='year', y=column, markers=True, color_discrete_sequence=["#FF5203", "#FFB347","#0A1172", "#ADD8E6",],)
+    fig.update_layout(yaxis_title='endorsements',) 
+    st.plotly_chart(fig)
 
-# Display explanatory text for the map
-st.write('The map below shows the population per country using different colors depending on their population. Countries with a population less than 5 million are shown in red, countries with a population between 5 and 10 million are shown in orange, and countries with a population greater than 10 million are shown in green.')
+with disp_col_2:
+	data = {
+		'Category': ['A', 'B', 'C', 'D'],
+		'Value': [10, 20, 30, 40]
+	}
+	fig = px.pie(data, values='Value', names='Category', hole=0.8, color_discrete_sequence=["#FF5203", "#FFB347","#0A1172", "#ADD8E6",])
+	fig.update_traces(marker=dict(line=dict(color='black', width=1)))
+	st.plotly_chart(fig)
 
-# Create the map
-st.pydeck_chart(pdk.Deck(
-    map_style='mapbox://styles/mapbox/light-v9',
-    initial_view_state=pdk.ViewState(
-        latitude=0,
-        longitude=0,
-        zoom=1,
-        pitch=50,
-    ),
-    layers=[
-        pdk.Layer(
-            'ColumnLayer',
-            data=map_data,
-            get_position='[lon, lat]',
-            get_elevation='population',
-            elevation_scale=1000,
-            radius=50000,
-            get_fill_color='fill_color',
-            pickable=True,
-            auto_highlight=True,
-        )
-    ],
-))
 
-# Create dummy data for the bubble chart
-bubble_data = pd.DataFrame({
-    'continent': ['Europe', 'North America'],
-    'population': [747.7, 579]
-})
 
-# Create a visual delimiter
-st.markdown('---')
+# Display a map using the longitude and latitude data
+st.markdown("## Confirmed outcome spots")
 
-# Display explanatory text for the bubble chart
-st.write('The bubble chart below shows the population of each continent on the y-axis and the continent on the x-axis. The size of each bubble is proportional to the continent\'s population.')
+# df_geo = pd.read_excel('test_data.xlsx', sheet_name="geo")
+# long = df_geo['long']
+# lat = df_geo['lat']
+# st.map(pd.DataFrame({'lat': lat, 'lon': long}), zoom=1,)
 
-# Create the bubble chart
-fig = px.scatter(bubble_data, x='continent', y='population', size='population', text='continent')
-fig.update_traces(textposition='top center')
-st.plotly_chart(fig)
+map_col_1, dummy, map_col_2 = st.columns([1.5,.1,5])
+
+with map_col_1:
+     st.markdown("Some other stuff... Some other stuff... Some other stuff... Some other stuff... Some other stuff... Some other stuff...  Some other stuff... Some other stuff... Some other stuff... Some other stuff... Some other stuff... Some other stuff... Some other stuff... Some other stuff...")    
+
+with map_col_2:
+
+	chart_data = pd.DataFrame(
+		np.random.randn(1000, 2) / [50, 50] + [37.76, -122.4],
+		columns=['lat', 'lon'])
+
+	st.pydeck_chart(pdk.Deck(
+		map_style='light',
+		initial_view_state=pdk.ViewState(
+			latitude=37.76,
+			longitude=-122.4,
+			zoom=10,
+			pitch=50,
+		),
+		layers=[
+			pdk.Layer(
+				'HexagonLayer',
+				data=chart_data,
+				get_position='[lon, lat]',
+				radius=200,
+				elevation_scale=4,
+				elevation_range=[0, 1000],
+				pickable=True,
+				extruded=True,
+			),
+			pdk.Layer(
+				'ScatterplotLayer',
+				data=chart_data,
+				get_position='[lon, lat]',
+				get_color='[200, 30, 0, 160]',
+				get_radius=200,
+			),
+		],
+	))
+

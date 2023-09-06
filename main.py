@@ -3,7 +3,6 @@ import pandas as pd
 import pydeck as pdk
 import numpy as np
 import random
-import matplotlib.pyplot as plt
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.tools import make_subplots

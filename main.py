@@ -6,18 +6,23 @@ import random
 import plotly.express as px
 import plotly.graph_objects as go
 from plotly.tools import make_subplots
+from utils import add_logo
+from PIL import Image
 
 st.set_page_config(layout="wide")
 
 # Logo
+image = Image.open('ffnpt_logo.png')
 col1, col2 = st.columns([8, 1])
-col2.image('https://images.squarespace-cdn.com/content/v1/5dd3cc5b7fd99372fbb04561/11220443-3caa-4681-9e3c-b518097ea2d0/Official+logo_fullname_fullcolour_for+dark+bg+-+no+outline%40FFNPT.png?format=100w',use_column_width='auto', width=200,)
+#col2.image('https://images.squarespace-cdn.com/content/v1/5dd3cc5b7fd99372fbb04561/11220443-3caa-4681-9e3c-b518097ea2d0/Official+logo_fullname_fullcolour_for+dark+bg+-+no+outline%40FFNPT.png?format=100w',use_column_width='auto', width=200,)
+
+col2.image(image)
+
 
 #####
 
 # Open the Excel file for reading
 df = pd.read_excel('test_data.xlsx', sheet_name="project")
-
 
 st.title("Show case dashboard for the FFNPT KPIs")
 

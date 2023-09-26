@@ -1,2 +1,2 @@
-# norcon_dashboard
+# FFNPT_dashboard
 Setting up a streamlit for showcasing data science analysis on the web.
